@@ -1,6 +1,8 @@
 "use strict";
 (function(){
 
+var quizImage = document.getElementById("quiz-image");
+
 var questionSection = document.getElementById("question-section");   
 var urlParams = new URLSearchParams(window.location.search);
 var quizId = urlParams.get('quizId');
@@ -56,7 +58,7 @@ var httpRequest;
    
      
    
-   var outputQuizList = function outputQuizList(data){
+   var outputQuizInfo = function outputQuizInfo(data){
        var quizResponse = JSON.parse(data);
        quizTitle.innerHTML = quizResponse[0].name;
        quizInfo.innerHTML = quizResponse[0].about;
