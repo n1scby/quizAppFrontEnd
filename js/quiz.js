@@ -52,14 +52,13 @@
        var outputQuizList = function outputQuizList(data){
            var quizResponse = JSON.parse(data);
        
-           // insert the response into the first positin of the array (newest is first)
-           quizArray.push(quizResponse);
+
     
-           quizArray.forEach(function(quizRes, idx, arr){
+           quizResponse.forEach(function(quizRes, idx, arr){
                var newListElement = document.createElement("li");
                var newAnchor = document.createElement("a");
                newAnchor.href = "quiz.html";
-               newListElement.textContent=quizRes.Name;
+               newListElement.textContent=quizRes.name;
 
                
              //  newGif.classList.add("m-2");
