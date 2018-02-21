@@ -57,8 +57,8 @@
            quizResponse.forEach(function(quizRes, idx, arr){
                var newListElement = document.createElement("li");
                var newAnchor = document.createElement("a");
-               newAnchor.href = "quiz.html";
-               newListElement.textContent=quizRes.name;
+               newAnchor.href = "quiz.html/?quizId=" + quizRes.id;
+               newAnchor.textContent=quizRes.name;
 
                
              //  newGif.classList.add("m-2");
