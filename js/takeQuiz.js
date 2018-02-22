@@ -2,6 +2,7 @@
 (function () {
 
     var quizImage = document.getElementById("quiz-image");
+    var questionImage = document.getElementById("question-image");
 
     var questionSection = document.getElementById("question-section");
     var urlParams = new URLSearchParams(window.location.search);
@@ -19,8 +20,13 @@
     var submitAnswer = document.getElementById("submit-answer");
     var nextButton = document.getElementById("next-button");
     var answerResponse = document.getElementById("answer-response");
+    var scoreSection = document.getElementById("score-section");
+    var questionNumberSection = document.getElementById("question-number");
 
     var answerId = 0;
+    var questionTotal = 0;
+    var totalCorrect = 0;
+    var questionAnswer;
 
 
     var httpRequest;
@@ -77,7 +83,7 @@
         if (quizData[0].image != null) {
             var newQuizImage = document.createElement("img");
             newQuizImage.src = "/images/" + quizData[0].image;
-            newQuizImage.classList.add("img-responsive");
+            newQuizImage.classList.add("img-fluid");
             quizImage.appendChild(newQuizImage);
         }
 
@@ -101,14 +107,27 @@
 
 
     var nextQuestion = function nextQuestion() {
-        if (questionNumber == 0 && quizData[0].questions[questionNumber] == null) {
+        
+        clearQuestion();
+
+        if (quizData[0].questions[questionNumber] == null) {
             questionSection.innerHTML = "Sorry, no questions to ask.";
             return;
         }
 
+        questionNumberSection.innerHTML = "Question: " + questionNumber;
+
         var newQuestionDiv = document.createElement("div");
         newQuestionDiv.innerHTML = quizData[0].questions[questionNumber].content;
         questionSection.appendChild(newQuestionDiv);
+
+
+        if (quizData[0].questions[questionNumber].image != null) {
+            var newQuestionImage = document.createElement("img");
+            newQuestionImage.src = "/images/" + quizData[0].questions[questionNumber].image;
+            newQuestionImage.classList.add("img-fluid");
+            questionImage.appendChild(newQuestionImage);
+        }
 
         switch (quizData[0].questions[questionNumber].type) {
 
@@ -130,18 +149,20 @@
 
     }
 
-    var assignMulti = function assignSelection() {
+    var assignSelection = function assignSelection() {
         quizData[0].questions[questionNumber].answers.forEach(function (answer, idx, arr) {
+            var newDiv = document.createElement("div");
             var newAnswerLabel = document.createElement("label");
             var newAnswerInput = document.createElement("input");
             newAnswerInput.type = "radio";
             newAnswerInput.value = answer.id;
             newAnswerInput.name = "Choice";
             newAnswerLabel.innerHTML = answer.content;
-            questionSection.appendChild(newAnswerLabel);
-            questionSection.appendChild(newAnswerInput);
+            newDiv.appendChild(newAnswerInput);
+            newDiv.appendChild(newAnswerLabel);            
+            questionSection.appendChild(newDiv);
             if (answer.isCorrect == true) {
-                answerId = answer.id;
+                questionAnswer = answer;
             }
 
 
@@ -166,6 +187,13 @@
         newAnswerInput.type = "text";
         newAnswerInput.id = "answer-fill";
         questionSection.appendChild(newAnswerInput);
+        quizData[0].questions[questionNumber].answers.forEach(function (answer, idx, arr) {
+            if (answer.isCorrect == true) {
+                questionAnswer = answer;
+            }
+
+        });
+
     }
 
    submitAnswer.addEventListener("click", function(){
@@ -174,16 +202,16 @@
     switch (quizData[0].questions[questionNumber].type) {
         
                     case "Multi":
-                        verifyMulti();
+                        verifySelection();
                         break;
                     case "TF":
-                        verifyTF();
+                        verifySelection();
                         break;
                     case "Fill":
                         verifyFill();
                         break;
                     default:
-                        verifyMulti();
+                        verifySelection();
                         break;
         
                 };
@@ -196,12 +224,14 @@
     nextQuestion();
    })
 
-   var verifyMulti = function verifySelection() {
+
+
+   var verifySelection = function verifySelection() {
        var selection = 0;
         var selections = document.getElementsByName("Choice");
         for(var i = 0; i<selections.length; i++) {
             if(selections[i].checked) {
-                selection = selection[i].value;
+                selection = selections[i].value;
             }
         }
 
@@ -210,16 +240,55 @@
             return;
         }
 
-        if (selection == answerId) {
+        if (selection == questionAnswer.id) {
             answerResponse.innerHTML = "Correct!";
             totalCorrect++;
         } else {
-            answer.Response.innerHTML = "Wrong!";
+            answerResponse.innerHTML = "Wrong!";
         }
 
         questionTotal++;
 
+        scoreSection.innerHTML = totalCorrect + " / " + questionTotal; 
 
+
+   }
+
+
+   var verifyFill = function verifyFill() {
+    var fillInAnswer = document.getElementById("answer-fill");
+    
+    
+
+     if (fillInAnswer.value == "") {
+         answerResponse.innerHTML = "Please Fill in Answer";
+         return;
+     }
+
+     if (fillInAnswer.value.toUpperCase() == questionAnswer.content.toUpperCase()) {
+         answerResponse.innerHTML = "Correct!";
+         totalCorrect++;
+     } else {
+         answerResponse.innerHTML = "Wrong!";
+     }
+
+     questionTotal++;
+
+     scoreSection.innerHTML = totalCorrect + " / " + questionTotal; 
+
+
+}
+
+
+
+
+   var clearQuestion = function clearQuestion(){
+        
+            while (questionSection.firstChild) {
+              questionSection.removeChild(questionSection.firstChild);
+             }
+
+             answerResponse.innerHTML = "";
    }
 
    makeRequest(quizUrl);
