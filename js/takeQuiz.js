@@ -12,7 +12,9 @@ var quizTitle = document.getElementById("quiz-title");
 var quizInfo = document.getElementById("quiz-info");
 
 var quizUrl = "http://localhost:57904/api/quiz/" + quizId;
-var questions = [];
+var quizData;
+
+var questionNumber = 0;
 
 
 var httpRequest;
@@ -42,7 +44,8 @@ var httpRequest;
         if(httpRequest.readyState === XMLHttpRequest.DONE){
             if(httpRequest.status === 200){
                 // console.log("Got Data: " + httpRequest.responseText);
-                outputQuizList(httpRequest.responseText);
+                splitData(httpRequest.responseText);
+                outputQuizInfo();
             }else{
                 alert("Request Failed." + httpRequest.status);
             }
@@ -56,16 +59,28 @@ var httpRequest;
         }
     
    
-     
+    var splitData = function splitData(data) {
+        quizData = JSON.parse(data);
+       
+    }
    
-   var outputQuizInfo = function outputQuizInfo(data){
-       var quizResponse = JSON.parse(data);
-       quizTitle.innerHTML = quizResponse[0].name;
-       quizInfo.innerHTML = quizResponse[0].about;
+   var outputQuizInfo = function outputQuizInfo(){
+       
+       quizTitle.innerHTML = quizData[0].name;
+       quizInfo.innerHTML = quizData[0].about;
+       if (quizData[0].image != null){
+           var newQuizImage = document.createElement("img");
+           newQuizImage.src = "/images/" + quizData[0].image;
+           newQuizImage.classList.add("img-responsive");
+           quizImage.appendChild(newQuizImage);
+       }
+
+       nextQuestion();
+
    
     //   quizResponse.forEach(function(quizRes, idx, arr){
           
-        questionSection.innerHTML=quizResponse[0].questions[0].content;
+   //     questionSection.innerHTML=quizResponse[0].questions[0].content;
 
            
          //  newGif.classList.add("m-2");
@@ -75,6 +90,38 @@ var httpRequest;
      //  });
        
    }
+
+   
+   
+
+   var nextQuestion = function nextQuestion(){
+        if (questionNumber == 0 && quizData[0].questions[questionNumber] == null){
+            questionSection.innerHTML = "Sorry, no questions to ask.";
+            return;
+        }
+
+        var newQuestionDiv = document.createElement("div");
+        newQuestionDiv.innerHTML=quizData[0].questions[questionNumber].content;
+        questionSection.appendChild(newQuestionDiv);
+        
+        if(quizData[0].questions[questionNumber].type == "Multi"){
+            quizData[0].questions[questionNumber].answers.forEach(function(answer, idx, arr){
+                var newAnswerLabel = document.createElement("label");
+                var newAnswerInput = document.createElement("input");
+                newAnswerInput.type="checkbox";
+                newAnswerLabel.innerHTML = answer.content;
+                questionSection.appendChild(newAnswerInput);                
+
+            });
+
+        }
+
+        questionNumber++;
+
+   }
+
+
+
 
    makeRequest(quizUrl);
    
