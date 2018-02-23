@@ -114,11 +114,12 @@
             questionSection.innerHTML = "Sorry, no questions to ask.";
             return;
         }
-
-        questionNumberSection.innerHTML = "Question: " + questionNumber;
+        var displayQuestionNumber = questionNumber + 1;
+        questionNumberSection.innerHTML = "Question: " + displayQuestionNumber;
 
         var newQuestionDiv = document.createElement("div");
         newQuestionDiv.innerHTML = quizData[0].questions[questionNumber].content;
+        newQuestionDiv.classList.add("mb-3");
         questionSection.appendChild(newQuestionDiv);
 
 
