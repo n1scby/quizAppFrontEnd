@@ -125,7 +125,7 @@
         if (quizData[0].questions[questionNumber].image != null) {
             var newQuestionImage = document.createElement("img");
             newQuestionImage.src = "/images/" + quizData[0].questions[questionNumber].image;
-            newQuestionImage.classList.add("img-fluid");
+            newQuestionImage.classList.add("img-thumbnail");
             questionImage.appendChild(newQuestionImage);
         }
 
@@ -289,6 +289,7 @@
              }
 
              answerResponse.innerHTML = "";
+             questionImage.innerHTML = "";
    }
 
    makeRequest(quizUrl);
