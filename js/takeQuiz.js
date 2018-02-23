@@ -159,6 +159,7 @@
             newAnswerInput.value = answer.id;
             newAnswerInput.name = "Choice";
             newAnswerLabel.innerHTML = answer.content;
+            newAnswerLabel.classList.add("pl-2");
             newDiv.appendChild(newAnswerInput);
             newDiv.appendChild(newAnswerLabel);            
             questionSection.appendChild(newDiv);
