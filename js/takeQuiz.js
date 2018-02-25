@@ -8,7 +8,7 @@
     var urlParams = new URLSearchParams(window.location.search);
     var quizId = urlParams.get('quizId');
 
-    questionSection.innerHTML = '<h2>' + quizId + '</h2>';
+    questionSection.innerHTML = "";
     var quizTitle = document.getElementById("quiz-title");
     var quizInfo = document.getElementById("quiz-info");
 
@@ -27,6 +27,7 @@
     var questionTotal = 0;
     var totalCorrect = 0;
     var questionAnswer;
+    var wrongAnswer = "";
 
 
     var httpRequest;
@@ -110,8 +111,18 @@
         
         clearQuestion();
 
-        if (quizData[0].questions[questionNumber] == null) {
+        // first question and no questions, then display message.
+        if (quizData[0].questions[questionNumber] == null && questionNumber == 0) {
             questionSection.innerHTML = "Sorry, no questions to ask.";
+            nextButton.disabled = true;
+            return;
+        }
+
+        // no more questions - Game is over.
+        if (quizData[0].questions.length == questionNumber) {
+            questionSection.innerHTML = "GAME OVER";
+            nextButton.disabled = true;
+            questionNumberSection.innerHTML = "";
             return;
         }
         var displayQuestionNumber = questionNumber + 1;
@@ -146,6 +157,9 @@
                 break;
 
         };
+
+        submitAnswer.disabled=false;
+        
      
 
     }
@@ -243,15 +257,19 @@
         }
 
         if (selection == questionAnswer.id) {
-            answerResponse.innerHTML = "Correct!";
+            outputResponseToAnswer("Correct");            
             totalCorrect++;
         } else {
-            answerResponse.innerHTML = "Wrong!";
+            outputResponseToAnswer("Wrong");
+            incorrectInfo(selection);
+            
         }
 
         questionTotal++;
+        submitAnswer.disabled=true;  //disable submit button
+        
 
-        scoreSection.innerHTML = totalCorrect + " / " + questionTotal; 
+        scoreSection.innerHTML = "Score: " + totalCorrect + " / " + questionTotal; 
 
 
    }
@@ -263,25 +281,62 @@
     
 
      if (fillInAnswer.value == "") {
-         answerResponse.innerHTML = "Please Fill in Answer";
+         answerResponse.innerHTML = "Please Fill in an Answer";
          return;
      }
 
      if (fillInAnswer.value.toUpperCase() == questionAnswer.content.toUpperCase()) {
-         answerResponse.innerHTML = "Correct!";
+         outputResponseToAnswer("Correct");
          totalCorrect++;
      } else {
-         answerResponse.innerHTML = "Wrong!";
+         outputResponseToAnswer("Wrong");
+         checkForWrongAnswerInfo(fillInAnswer.value.toUpperCase());
      }
 
+     submitAnswer.disabled=true;     
      questionTotal++;
 
-     scoreSection.innerHTML = totalCorrect + " / " + questionTotal; 
+     scoreSection.innerHTML = "Score: " + totalCorrect + " / " + questionTotal; 
 
 
 }
 
 
+    var outputResponseToAnswer = function outputResponseToAnswer(rightOrWrong){
+        if (rightOrWrong == "Correct"){
+            answerResponse.innerHTML = "<span id=\"correct-answer\">Correct!  " + questionAnswer.info + "</span>";
+        } else 
+        {           
+            wrongAnswer = "<span id=\"wrong-answer\">That is not correct.  ";
+        }
+    }
+
+
+    // Find the incorrect answer in the answers list to see if any extra info should be displayed.
+    var incorrectInfo = function incorrectInfo(valueId){
+        var answerInfo = quizData[0].questions[questionNumber].answers.find(function(ans){
+            return ans.id == valueId;
+        
+        });
+
+        if (answerInfo.info != null) {
+        wrongAnswer += answerInfo.info;
+        }
+        
+        answerResponse.innerHTML = wrongAnswer + "</span>";
+    }
+
+   
+   // Check for an incorrect answer in the answers array to see if there is any info that should be displayed for a fill-in answer.
+    var checkForWrongAnswerInfo = function checkForWrongAnswerInfo(valueUpCase) {
+        var answerInfo = quizData[0].questions[questionNumber].answers.find(function(ans){
+            return ans.content.toUpperCase() == valueUpCase;
+        });
+        if (answerInfo != null && answerInfo.info != null){
+            wrongAnswer += answerInfo.info;
+        }
+        answerResponse.innerHTML = wrongAnswer + "</span>";
+    }
 
 
    var clearQuestion = function clearQuestion(){
@@ -292,6 +347,7 @@
 
              answerResponse.innerHTML = "";
              questionImage.innerHTML = "";
+             wrongAnswer = "";
    }
 
    makeRequest(quizUrl);

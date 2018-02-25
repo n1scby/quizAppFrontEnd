@@ -1,3 +1,31 @@
 #buttons {position: absolute;
         top: 20rem;
 }
+
+#correct-answer {color: rgb(32, 32, 252);
+                }
+
+#wrong-answer {color: rgb(226, 15, 15);
+                }
+
+
+@media(min-width: 577px) {
+    #correct-answer {font-size: 1.5rem;}
+
+    #wrong-answer {font-size: 1.5rem;}
+    #answer-response {margin-top: 1rem;}
+    }
+
+@media(max-width: 576px) {
+ #question-image {display: none;}  
+ #quiz-image {max-width: 60%;
+                margin: auto;} 
+ #correct-answer { font-size: 1rem;
+                 }
+ #wrong-answer { font-size: 1rem;
+                 }
+ #answer-response {padding: 1rem;}
+
+ }
+
+
