@@ -84,6 +84,7 @@
         if (quizData[0].image != null) {
             var newQuizImage = document.createElement("img");
             newQuizImage.src = "/images/" + quizData[0].image;
+       //     newQuizImage.src = quizData[0].imagePath;            
             newQuizImage.classList.add("img-fluid");
             quizImage.appendChild(newQuizImage);
         }
@@ -137,6 +138,7 @@
         if (quizData[0].questions[questionNumber].image != null) {
             var newQuestionImage = document.createElement("img");
             newQuestionImage.src = "/images/" + quizData[0].questions[questionNumber].image;
+      //      newQuestionImage.src = quizData[0].questions[questionNumber].imagePath;            
             newQuestionImage.classList.add("img-thumbnail");
             questionImage.appendChild(newQuestionImage);
         }
